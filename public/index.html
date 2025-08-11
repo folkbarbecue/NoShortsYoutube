@@ -1,80 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu YouTube</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 10px;
-      background: #f9f9f9;
-    }
-    .search-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .videos {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 15px;
-    }
-    .video {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .video img {
-      width: 100%;
-      display: block;
-    }
-    .video h3 {
-      padding: 10px;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu YouTube</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f9f9f9;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  header h1 {
+    color: red;
+    margin: 0 15px 0 0;
+  }
+  header input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-size: 14px;
+  }
+  header button {
+    padding: 8px 12px;
+    margin-left: 5px;
+    border: none;
+    background: #cc0000;
+    color: white;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  main {
+    padding: 15px;
+  }
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+  }
+  .video {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  .video img {
+    width: 100%;
+    display: block;
+  }
+  .video h3 {
+    padding: 10px;
+    font-size: 14px;
+    flex: 1;
+  }
+</style>
 </head>
 <body>
 
-  <div class="search-container">
-    <input type="text" id="search" placeholder="Buscar vídeos..." />
-    <button onclick="searchVideos()">Buscar</button>
-  </div>
+<header>
+  <h1>MeuTube</h1>
+  <input type="text" id="search" placeholder="Buscar vídeos...">
+  <button onclick="searchVideos()">Buscar</button>
+</header>
 
+<main>
+  <h2 id="section-title">Recomendados</h2>
   <div id="video-list" class="videos"></div>
+</main>
 
-  <script>
-    const API_KEY = "AIzaSyAYXr48Vp40iv2OKcK8rhOIRfIHfSMOsuw"; // coloque sua chave da YouTube API aqui
+<script>
+  const API_KEY = "AIzaSyAYXr48Vp40iv2OKcK8rhOIRfIHfSMOsuw"; // coloque sua chave do YouTube Data API
+  const videoListEl = document.getElementById('video-list');
+  const sectionTitle = document.getElementById('section-title');
 
-    async function searchVideos() {
-      const query = document.getElementById('search').value;
-      if (!query) return alert("Digite algo para buscar!");
+  document.addEventListener("DOMContentLoaded", () => {
+    const history = JSON.parse(localStorage.getItem("history") || "[]");
+    if (history.length > 0) {
+      const lastTopic = history[history.length - 1];
+      sectionTitle.textContent = `Baseado em: ${lastTopic}`;
+      fetchVideos(lastTopic);
+    } else {
+      fetchVideos("vídeos populares no brasil");
+    }
+  });
 
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=8&key=${API_KEY}`);
+  async function fetchVideos(query) {
+    videoListEl.innerHTML = "<p>Carregando...</p>";
+    try {
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&key=${API_KEY}`);
       const data = await res.json();
-
-      const videoList = document.getElementById('video-list');
-      videoList.innerHTML = "";
-
+      videoListEl.innerHTML = "";
       data.items.forEach(item => {
         const videoId = item.id.videoId;
         const title = item.snippet.title;
         const thumbnail = item.snippet.thumbnails.medium.url;
-
         const videoEl = document.createElement("div");
         videoEl.classList.add("video");
         videoEl.innerHTML = `
-          <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">
+          <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" onclick="saveHistory('${query}')">
             <img src="${thumbnail}" alt="${title}">
           </a>
           <h3>${title}</h3>
         `;
-        videoList.appendChild(videoEl);
+        videoListEl.appendChild(videoEl);
       });
+    } catch (err) {
+      videoListEl.innerHTML = "<p>Erro ao carregar vídeos</p>";
     }
-  </script>
+  }
+
+  function searchVideos() {
+    const query = document.getElementById('search').value.trim();
+    if (!query) return;
+    sectionTitle.textContent = `Resultados para: ${query}`;
+    saveHistory(query);
+    fetchVideos(query);
+  }
+
+  function saveHistory(query) {
+    let history = JSON.parse(localStorage.getItem("history") || "[]");
+    history.push(query);
+    localStorage.setItem("history", JSON.stringify(history));
+  }
+</script>
 
 </body>
 </html>
