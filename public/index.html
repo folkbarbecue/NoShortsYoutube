@@ -7,24 +7,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="youtube(1).png">
+  <link rel="icon" type="image/png" href="./public/youtube(1).png">
+
 <style>
   body {
     font-family: 'Roboto', Arial, sans-serif;
     margin: 0;
-    background: #181818;
-    color: #f1f1f1;
+    background: #f9f9f9; /* Fundo branco suave */
+    color: #030303; /* Cor do texto escuro */
   }
   header {
     display: flex;
     align-items: center;
     padding: 10px 20px;
-    background: #202020;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background: #ffffff; /* Barra superior branca */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid #383838;
+    border-bottom: 1px solid #e5e5e5;
   }
   header h1 {
     color: #ff0000;
@@ -36,9 +37,9 @@
   header input {
     flex: 1;
     padding: 10px 15px;
-    border: 1px solid #383838;
-    background: #121212;
-    color: #f1f1f1;
+    border: 1px solid #cccccc;
+    background: #f1f1f1; /* Fundo do campo de busca cinza claro */
+    color: #030303;
     border-radius: 20px;
     font-size: 16px;
     max-width: 600px;
@@ -47,15 +48,15 @@
     padding: 10px 20px;
     margin-left: 10px;
     border: none;
-    background: #383838;
-    color: #f1f1f1;
+    background: #e5e5e5; /* Cor do botão de busca */
+    color: #030303;
     cursor: pointer;
     border-radius: 20px;
     transition: background 0.3s;
     font-size: 16px;
   }
   header button:hover {
-    background: #505050;
+    background: #d4d4d4; /* Escurece o botão ao passar o mouse */
   }
   main {
     padding: 20px;
@@ -64,16 +65,16 @@
   }
   #player-container {
     display: none;
-    background: #202020;
+    background: #ffffff;
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
   #player-container h2 {
     margin-top: 15px;
     font-size: 24px;
-    color: #fff;
+    color: #030303;
   }
   .videos {
     display: grid;
@@ -81,10 +82,10 @@
     gap: 20px;
   }
   .video {
-    background: #202020;
+    background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
     text-decoration: none;
@@ -92,7 +93,7 @@
   }
   .video:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
   }
   .video img {
     width: 100%;
@@ -103,7 +104,7 @@
     font-size: 16px;
     margin: 0;
     line-height: 1.4em;
-    color: #fff;
+    color: #030303;
   }
   h2#section-title {
     margin-bottom: 20px;
