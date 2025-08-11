@@ -4,90 +4,111 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MeuTube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" type="image/x-icon" href="icone.ico">
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     margin: 0;
-    background: #f1f1f1;
-    color: #333;
+    background: #181818;
+    color: #f1f1f1;
   }
   header {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 20px;
+    background: #202020;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid #383838;
   }
   header h1 {
-    color: red;
-    margin: 0 15px 0 0;
+    color: #ff0000;
+    margin: 0 20px 0 0;
+    font-size: 24px;
     font-weight: bold;
+    letter-spacing: -1px;
   }
   header input {
     flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 10px 15px;
+    border: 1px solid #383838;
+    background: #121212;
+    color: #f1f1f1;
+    border-radius: 20px;
+    font-size: 16px;
+    max-width: 600px;
   }
   header button {
-    padding: 8px 15px;
-    margin-left: 8px;
+    padding: 10px 20px;
+    margin-left: 10px;
     border: none;
-    background: #cc0000;
-    color: white;
+    background: #383838;
+    color: #f1f1f1;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 20px;
     transition: background 0.3s;
+    font-size: 16px;
   }
   header button:hover {
-    background: #a30000;
+    background: #505050;
   }
   main {
-    padding: 15px;
-    max-width: 1200px;
+    padding: 20px;
+    max-width: 1300px;
     margin: auto;
   }
   #player-container {
     display: none;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    background: #202020;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
   #player-container h2 {
-    margin-top: 10px;
-    font-size: 18px;
+    margin-top: 15px;
+    font-size: 24px;
+    color: #fff;
   }
   .videos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
   }
   .video {
-    background: white;
-    border-radius: 6px;
+    background: #202020;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
   }
   .video:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.5);
   }
   .video img {
     width: 100%;
     display: block;
   }
   .video h3 {
-    padding: 10px;
-    font-size: 14px;
+    padding: 15px;
+    font-size: 16px;
     margin: 0;
     line-height: 1.4em;
+    color: #fff;
+  }
+  h2#section-title {
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: 500;
   }
 </style>
 </head>
@@ -110,7 +131,7 @@
 </main>
 
 <script>
-  const API_KEY = "AIzaSyAYXr48Vp40iv2OKcK8rhOIRfIHfSMOsuw"; // coloque sua chave da API do YouTube
+  const API_KEY = "SUA_CHAVE_AQUI"; // coloque sua chave da API do YouTube
   const videoListEl = document.getElementById('video-list');
   const sectionTitle = document.getElementById('section-title');
   const playerContainer = document.getElementById('player-container');
