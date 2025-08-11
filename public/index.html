@@ -3,161 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MyTube</title>
+  <title>Meu YouTube</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #0f0f0f; color: white; }
-    header { display: flex; padding: 10px; background: #202020; align-items: center; gap: 10px; }
-    input { flex: 1; padding: 8px; border-radius: 4px; border: none; }
-    button { padding: 8px 12px; background: red; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    main { padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-    .video-card { background: #181818; border-radius: 8px; overflow: hidden; cursor: pointer; }
-    .video-card img { width: 100%; display: block; }
-    .video-card h3 { padding: 8px; font-size: 14px; }
-    iframe { width: 100%; height: 315px; }
-    @media (max-width: 600px) {
-      main { grid-template-columns: 1fr; }
-      iframe { height: 200px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    .video {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .video img {
+      width: 100%;
+      display: block;
+    }
+    .video h3 {
+      padding: 10px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <input id="searchInput" type="text" placeholder="Buscar vídeos...">
-  <button onclick="searchVideos()">Buscar</button>
-  <button id="loginBtn" onclick="login()">Login</button>
-  <button id="logoutBtn" style="display:none;" onclick="logout()">Sair</button>
-</header>
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Buscar vídeos..." />
+    <button onclick="searchVideos()">Buscar</button>
+  </div>
 
-<section id="recommendations" style="padding:10px;">
-  <h2>Recomendados para você</h2>
-  <div id="recContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;"></div>
-</section>
+  <div id="video-list" class="videos"></div>
 
-<main id="videoContainer"></main>
+  <script>
+    const API_KEY = "AIzaSyAYXr48Vp40iv2OKcK8rhOIRfIHfSMOsuw"; // coloque sua chave da YouTube API aqui
 
-<section id="playerSection" style="display:none; padding:10px;">
-  <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
-</section>
+    async function searchVideos() {
+      const query = document.getElementById('search').value;
+      if (!query) return alert("Digite algo para buscar!");
 
-<script type="module">
-  // Firebase Config
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=8&key=${API_KEY}`);
+      const data = await res.json();
 
-  const firebaseConfig = {
-  
-  apiKey: "AIzaSyBXYW36DiAedQIsP-nZ3ouJbztGZMKuZJ4",
-  authDomain: "hobbit-30087.firebaseapp.com",
-  projectId: "hobbit-30087",
-  storageBucket: "hobbit-30087.firebasestorage.app",
-  messagingSenderId: "534141903386",
-  appId: "1:534141903386:web:589d45ba5b1378f0dd67a3",
-  measurementId: "G-REK9Z693CL"
-};
- 
+      const videoList = document.getElementById('video-list');
+      videoList.innerHTML = "";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+      data.items.forEach(item => {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumbnail = item.snippet.thumbnails.medium.url;
 
-  let currentUser = null;
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      document.getElementById("loginBtn").style.display = "none";
-      document.getElementById("logoutBtn").style.display = "block";
-      loadRecommendations();
-    } else {
-      currentUser = null;
-      document.getElementById("loginBtn").style.display = "block";
-      document.getElementById("logoutBtn").style.display = "none";
-    }
-  });
-
-  async function login() {
-    const email = prompt("Digite seu email:");
-    const senha = prompt("Digite sua senha:");
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      alert("Login bem-sucedido!");
-    } catch {
-      if (confirm("Usuário não encontrado. Criar conta?")) {
-        await createUserWithEmailAndPassword(auth, email, senha);
-        await setDoc(doc(db, "users", email), { history: [] });
-      }
-    }
-  }
-
-  function logout() {
-    signOut(auth);
-  }
-
-  async function searchVideos() {
-    const query = document.getElementById("searchInput").value;
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    renderVideos(data.items);
-  }
-
-  function renderVideos(videos) {
-    const container = document.getElementById("videoContainer");
-    container.innerHTML = "";
-    videos.forEach(v => {
-      const card = document.createElement("div");
-      card.className = "video-card";
-      card.innerHTML = `
-        <img src="${v.snippet.thumbnails.medium.url}" alt="">
-        <h3>${v.snippet.title}</h3>
-      `;
-      card.onclick = () => playVideo(v.id.videoId, v.snippet.title);
-      container.appendChild(card);
-    });
-  }
-
-  async function playVideo(videoId, title) {
-    document.getElementById("playerSection").style.display = "block";
-    document.getElementById("videoPlayer").src = `https://www.youtube.com/embed/${videoId}`;
-    if (currentUser) {
-      const userRef = doc(db, "users", currentUser.email);
-      await updateDoc(userRef, {
-        history: arrayUnion({ videoId, title, ts: Date.now() })
+        const videoEl = document.createElement("div");
+        videoEl.classList.add("video");
+        videoEl.innerHTML = `
+          <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">
+            <img src="${thumbnail}" alt="${title}">
+          </a>
+          <h3>${title}</h3>
+        `;
+        videoList.appendChild(videoEl);
       });
     }
-  }
-
-  async function loadRecommendations() {
-    if (!currentUser) return;
-    const userRef = doc(db, "users", currentUser.email);
-    const snap = await getDoc(userRef);
-    if (!snap.exists()) return;
-    const history = snap.data().history || [];
-    const keywords = history.map(h => h.title.split(" ")).flat();
-    const mostCommon = keywords.slice(-3).join(" ");
-    if (mostCommon) {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(mostCommon)}`);
-      const data = await res.json();
-      renderRecommendations(data.items);
-    }
-  }
-
-  function renderRecommendations(videos) {
-    const container = document.getElementById("recContainer");
-    container.innerHTML = "";
-    videos.forEach(v => {
-      const card = document.createElement("div");
-      card.className = "video-card";
-      card.innerHTML = `
-        <img src="${v.snippet.thumbnails.medium.url}" alt="">
-        <h3>${v.snippet.title}</h3>
-      `;
-      card.onclick = () => playVideo(v.id.videoId, v.snippet.title);
-      container.appendChild(card);
-    });
-  }
-</script>
+  </script>
 
 </body>
 </html>
